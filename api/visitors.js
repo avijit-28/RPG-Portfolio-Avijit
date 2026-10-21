@@ -3,10 +3,23 @@
 // Privacy-Protected, Multi-User Presence & Registration Engine
 // ========================================================
 
+import fs from 'fs';
+import path from 'path';
+
 const ADMIN_PIN = process.env.ADMIN_PIN || "9410"; // Honor 9.41 CGPA
 
-// In-memory cache for serverless instance lifespan
+// In-memory cache for serverless instance lifespan, seeded from repo visitors_db.json
 let cachedVisitors = [];
+try {
+  const dbPath = path.join(process.cwd(), 'visitors_db.json');
+  if (fs.existsSync(dbPath)) {
+    const raw = fs.readFileSync(dbPath, 'utf-8');
+    cachedVisitors = JSON.parse(raw);
+  }
+} catch (e) {
+  console.warn("Could not read seed visitors_db.json:", e);
+}
+
 let livePlayers = new Map(); // id -> { id, name, room, x, y, facing, moving, walkCycle, lastSeen }
 
 export default async function handler(req, res) {
