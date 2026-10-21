@@ -1,0 +1,23 @@
+[
+  {
+    "badgeId": "AP-VIS-5961",
+    "name": "Avijit Pakhira",
+    "location": "Kolkata",
+    "email": "avijitp.cse.jisu22@gmail.com",
+    "registeredAt": "2026-10-21T13:34:52Z"
+  },
+  {
+    "badgeId": "AP-VIS-5679",
+    "name": "Rahul",
+    "location": "Delhi",
+    "email": "rahul@example.com",
+    "registeredAt": "2026-10-21T13:17:59Z"
+  },
+  {
+    "badgeId": "AP-VIS-5650",
+    "name": "Avijit",
+    "location": "Kolkata",
+    "email": "avijit@example.com",
+    "registeredAt": "2026-10-21T13:17:30Z"
+  }
+]

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Avijit Pakhira | The Office RPG Portfolio & AI Labs</title>
+
+  <!-- SEO & Social Preview Meta Tags -->
+  <meta name="description" content="Explore Avijit Pakhira's Office Portfolio — An interactive, colorful RPG game where you visit AI Labs, talk with reception, inspect 16 machine learning systems, examine Springer research papers, and download his resume.">
+  <meta name="keywords" content="Avijit Pakhira, Portfolio, Office Game, AI Engineer, Machine Learning, Computer Vision, Deep Learning, JIS University, Springer">
+  <meta name="author" content="Avijit Pakhira">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/jpeg" href="avi.jpeg">
+
+  <!-- Google Fonts: Syne (Cyber Display), Plus Jakarta Sans (Clean Modern), JetBrains Mono (Tech) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons 6.5.1 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Game & UI Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="game-body">
+
+  <!-- ========================================================
+       CINEMATIC PRELOADER / LOADING SCREEN
+  ======================================================== -->
+  <div id="officePreloader" class="office-preloader">
+    <div class="preloader-bg-pattern"></div>
+    <div class="preloader-card">
+      
+      <!-- Holographic Orbital Ring Crest -->
+      <div class="preloader-ring-wrap">
+        <div class="ring-core">
+          <span class="core-symbol">AP</span>
+        </div>
+        <div class="orbital-ring ring-cyan"></div>
+        <div class="orbital-ring ring-violet"></div>
+        <div class="orbital-ring ring-amber"></div>
+      </div>
+
+      <div class="preloader-title-wrap">
+        <h1 class="preloader-title">AVIJIT AI LABS</h1>
+        <div class="preloader-sub">OFFICE RPG ENVIRONMENT INITIALIZATION</div>
+      </div>
+
+      <!-- Animated Progress Bar -->
+      <div class="preloader-progress-wrap">
+        <div class="preloader-progress-bar">
+          <div id="preloaderBarFill" class="preloader-bar-fill"></div>
+        </div>
+        <div class="preloader-metrics">
+          <span id="preloaderStatusText" class="preloader-status">Booting neural environment...</span>
+          <span id="preloaderPercent" class="preloader-percent">0%</span>
+        </div>
+      </div>
+
+      <!-- Live Diagnostic Terminal Box -->
+      <div class="preloader-console">
+        <span class="p-prompt">&gt;</span> <span id="preloaderConsoleLine">Initializing WebGL &amp; Canvas render pipeline...</span>
+      </div>
+
+      <!-- Enter Office CTA (Enabled on 100%) -->
+      <button id="preloaderEnterBtn" class="preloader-enter-btn">
+        <span>ENTER THE OFFICE</span> <i class="fas fa-arrow-right"></i>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ========================================================
+       TOP GAME HUD & CONTROLS BAR
+  ======================================================== -->
+  <header id="gameHud" class="game-hud">
+    <div class="hud-left">
+      <div id="hudLogoBadge" class="hud-logo-badge" title="Avijit AI Labs · Admin Access">AP</div>
+      <div class="hud-brand-info">
+        <span class="hud-title">AVIJIT AI LABS</span>
+        <span class="hud-status"><span class="status-pulse"></span> ONLINE · SECTOR 01</span>
+      </div>
+    </div>
+
+    <!-- Center: Quest & Room Tracker -->
+    <div class="hud-center">
+      <div id="questProgressText" class="quest-pill">
+        <i class="fas fa-compass text-cyan"></i> Rooms: <strong>1/6</strong> · Secrets: <strong>0/4</strong>
+      </div>
+      <div id="visitorBadgePill" class="visitor-badge-pill" title="Click to view Security Pass">
+        <i class="fas fa-id-badge text-cyan"></i> <span id="visitorBadgeName">Guest Pass</span>
+      </div>
+      <div id="liveVisitorsPill" class="live-visitors-pill" title="Live Visitors Exploring Now">
+        <span class="live-pulse-dot"></span> <span id="liveCountText">1 Online</span>
+      </div>
+    </div>
+
+    <!-- Right: Quick Action Controls -->
+    <div class="hud-right">
+      <button id="hudSoundToggle" class="hud-btn" title="Toggle Sound FX">
+        <i class="fas fa-volume-high"></i> SFX: ON
+      </button>
+
+      <button id="hudBgmToggle" class="hud-btn" title="Toggle Synth Music">
+        <i class="fas fa-music"></i> Synth BGM: OFF
+      </button>
+
+      <button id="hudTourBtn" class="hud-btn hud-btn-accent" title="Take Guided Tour">
+        <i class="fas fa-route"></i> VIP Tour
+      </button>
+
+      <button id="hudMapBtn" class="hud-btn" title="Fast Travel Teleporter">
+        <i class="fas fa-map-location-dot"></i> Fast Travel
+      </button>
+
+      <button id="hudDossierBtn" class="hud-btn hud-btn-dossier" title="Switch to Full Classic Portfolio">
+        <i class="fas fa-folder-open"></i> Executive View
+      </button>
+
+      <a href="https://drive.google.com/uc?export=download&id=11c-2tHDlnOW8mPERKGlj8OP8Jjxf7sSf" target="_blank" class="hud-btn hud-btn-resume" title="Download Resume">
+        <i class="fas fa-file-pdf"></i> Resume
+      </a>
+    </div>
+  </header>
+
+  <!-- ========================================================
+       MAIN 2D CANVAS GAME VIEWPORT
+  ======================================================== -->
+  <main id="gameViewport" class="game-viewport">
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Interactive Proximity Prompt Floating Banner -->
+    <div id="interactionPrompt" class="interaction-prompt">
+      <span class="kbd-badge">E</span> or <span class="click-badge">Click</span> to Interact
+    </div>
+
+    <!-- VIP Guided Tour Narration Overlay -->
+    <div id="tourBanner" class="tour-banner">
+      <div class="tour-badge"><i class="fas fa-route"></i> AUTOPILOT TOUR</div>
+      <p id="tourBannerText" class="tour-banner-text">Welcome to Avijit AI Labs VIP Tour...</p>
+      <button id="stopTourBtn" class="stop-tour-btn" title="Exit Guided Tour">
+        <i class="fas fa-xmark"></i> Stop
+      </button>
+    </div>
+
+    <!-- On-screen Tutorial Pill -->
+    <div class="controls-hint-pill">
+      <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / Click to Walk</span>
+      <span class="dot-sep">•</span>
+      <span>Press <kbd>E</kbd> near objects</span>
+    </div>
+  </main>
+
+  <!-- ========================================================
+       INTERACTIVE DIALOGUE BALLOON
+  ======================================================== -->
+  <div id="dialogueBox" class="dialogue-box">
+    <div class="dialogue-header">
+      <div class="dialogue-speaker-wrap">
+        <img id="dialogueSpeakerImg" class="dialogue-speaker-img" src="" alt="Speaker">
+        <div class="speaker-tag">
+          <span id="dialogueSpeaker">EVA // AI Receptionist</span>
+        </div>
+      </div>
+      <div class="audio-wave">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+    
+    <div class="dialogue-body">
+      <p id="dialogueText" class="dialogue-text"></p>
+    </div>
+
+    <div id="dialogueOptions" class="dialogue-options-grid">
+      <!-- Options injected dynamically by ui.js -->
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MOBILE TOUCH CONTROLS (VIRTUAL JOYSTICK & ACTION BUTTON)
+  ======================================================== -->
+  <div id="mobileControlsOverlay" class="mobile-controls-overlay">
+    <div id="touchJoystickArea" class="touch-joystick-area">
+      <div id="touchJoystickThumb" class="touch-joystick-thumb"></div>
+    </div>
+
+    <div class="mobile-action-wrap">
+      <button id="mobileActionBtn" class="mobile-action-btn">
+        <i class="fas fa-hand-pointer"></i>
+        <span>INTERACT</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       UNIVERSAL MODAL OVERLAY (Projects, Papers, Certs, etc.)
+  ======================================================== -->
+  <div id="modalOverlay" class="modal-overlay">
+    <div id="modalContent" class="modal-content-container">
+      <!-- Modal card rendered dynamically by ui.js -->
+    </div>
+  </div>
+
+  <!-- ========================================================
+       EXECUTIVE DOSSIER FULL-SCREEN VIEW (Classic Portfolio)
+  ======================================================== -->
+  <div id="executiveDossierView" class="executive-dossier-view">
+    <div class="dossier-nav-bar">
+      <div class="dossier-nav-brand">
+        <span class="badge">AP</span>
+        <span class="name">AVIJIT PAKHIRA // EXECUTIVE DOSSIER</span>
+      </div>
+      <button id="exitDossierBtn" class="exit-dossier-btn">
+        <i class="fas fa-gamepad"></i> Return to Office RPG
+      </button>
+    </div>
+
+    <div id="dossierScrollBody" class="dossier-scroll-body">
+      <!-- Injected by ui.js -->
+    </div>
+  </div>
+
+  <!-- Toast Notification Pill -->
+  <div id="gameToast" class="game-toast"></div>
+
+  <!-- ========================================================
+       SCRIPTS (Modular, Pure Vanilla JS, Zero Build Step)
+  ======================================================== -->
+  <script src="data.js"></script>
+  <script src="game.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>
