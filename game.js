@@ -979,22 +979,41 @@ class OfficeGame {
       }
     });
 
-    // Touch Joystick for mobile
+    // Touch Joystick for mobile (Multi-Touch Aware)
     const joystickArea = document.getElementById('touchJoystickArea');
     const joystickThumb = document.getElementById('touchJoystickThumb');
     const actionBtn = document.getElementById('mobileActionBtn');
 
     if (joystickArea && joystickThumb) {
+      let activeTouchId = null;
+
       const handleTouch = (e) => {
-        const touch = e.touches[0];
+        let touch = null;
+        if (activeTouchId === null) {
+          touch = e.changedTouches[0];
+          activeTouchId = touch.identifier;
+        } else {
+          for (let i = 0; i < e.touches.length; i++) {
+            if (e.touches[i].identifier === activeTouchId) {
+              touch = e.touches[i];
+              break;
+            }
+          }
+        }
+        if (!touch) return;
+        if (e.cancelable) e.preventDefault();
+
         const rect = joystickArea.getBoundingClientRect();
         this.touchJoystick.active = true;
+        this.player.targetX = null;
+        this.player.targetY = null;
+
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
         const dx = touch.clientX - cx;
         const dy = touch.clientY - cy;
         const dist = Math.hypot(dx, dy);
-        const maxDist = 42;
+        const maxDist = 38;
         const angle = Math.atan2(dy, dx);
         const clampedDist = Math.min(dist, maxDist);
 
@@ -1006,14 +1025,23 @@ class OfficeGame {
         this.touchJoystick.dy = thumbY / maxDist;
       };
 
-      joystickArea.addEventListener('touchstart', (e) => { handleTouch(e); }, { passive: false });
-      joystickArea.addEventListener('touchmove', (e) => { handleTouch(e); }, { passive: false });
-      joystickArea.addEventListener('touchend', () => {
-        this.touchJoystick.active = false;
-        this.touchJoystick.dx = 0;
-        this.touchJoystick.dy = 0;
-        joystickThumb.style.transform = 'translate(0px, 0px)';
-      });
+      const endTouch = (e) => {
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          if (e.changedTouches[i].identifier === activeTouchId) {
+            activeTouchId = null;
+            this.touchJoystick.active = false;
+            this.touchJoystick.dx = 0;
+            this.touchJoystick.dy = 0;
+            joystickThumb.style.transform = 'translate(0px, 0px)';
+            break;
+          }
+        }
+      };
+
+      joystickArea.addEventListener('touchstart', handleTouch, { passive: false });
+      joystickArea.addEventListener('touchmove', handleTouch, { passive: false });
+      joystickArea.addEventListener('touchend', endTouch);
+      joystickArea.addEventListener('touchcancel', endTouch);
     }
 
     if (actionBtn) {
@@ -1032,14 +1060,48 @@ class OfficeGame {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
     
-    // Scale room so the 960x640 diorama fits perfectly in viewport
-    const scaleX = this.canvas.width / 960;
-    const scaleY = (this.canvas.height - 64) / 640;
-    this.camera.scale = Math.min(scaleX, scaleY) * 0.96;
-    
-    // Center camera on room
-    this.camera.x = 480 - (this.canvas.width / this.camera.scale) / 2;
-    this.camera.y = 320 - (this.canvas.height / this.camera.scale) / 2 + 32 / this.camera.scale;
+    // Adaptive room scaling (supports both Desktop Diorama & Mobile Follow)
+    const isMobile = this.canvas.width < 860 || (this.canvas.height > this.canvas.width);
+    if (isMobile) {
+      // Zoom in appropriately on mobile portrait so character is clear & readable
+      const baseScale = Math.min(this.canvas.width / 460, this.canvas.height / 540);
+      this.camera.scale = Math.max(0.72, Math.min(1.18, baseScale));
+    } else {
+      const scaleX = this.canvas.width / 960;
+      const scaleY = (this.canvas.height - 64) / 640;
+      this.camera.scale = Math.min(scaleX, scaleY) * 0.96;
+    }
+    this.updateCamera(1);
+  }
+
+  updateCamera(dt = 1) {
+    const isMobile = this.canvas.width < 860 || (this.canvas.height > this.canvas.width);
+    const viewW = this.canvas.width / this.camera.scale;
+    const viewH = this.canvas.height / this.camera.scale;
+
+    if (isMobile) {
+      // Camera smoothly tracks player on mobile viewports
+      const targetX = this.player.x - viewW / 2;
+      const targetY = this.player.y - viewH / 2;
+      
+      const minCamX = 0;
+      const maxCamX = Math.max(0, 960 - viewW);
+      const minCamY = 0;
+      const maxCamY = Math.max(0, 640 - viewH);
+
+      const clampedX = Math.max(minCamX, Math.min(maxCamX, targetX));
+      const clampedY = Math.max(minCamY, Math.min(maxCamY, targetY));
+
+      const lerpSpeed = dt === 1 ? 1 : Math.min(1, dt * 6.5);
+      this.camera.x += (clampedX - this.camera.x) * lerpSpeed;
+      this.camera.y += (clampedY - this.camera.y) * lerpSpeed;
+    } else {
+      // Desktop: Center diorama
+      const targetX = 480 - viewW / 2;
+      const targetY = 320 - viewH / 2 + 32 / this.camera.scale;
+      this.camera.x = targetX;
+      this.camera.y = targetY;
+    }
   }
 
   // ----------------------------------------------------
@@ -1188,7 +1250,29 @@ class OfficeGame {
           promptEl.classList.remove('visible');
         }
       }
+
+      // Update mobile action button styling & label dynamically
+      const mobileActionBtn = document.getElementById('mobileActionBtn');
+      if (mobileActionBtn) {
+        if (this.nearbyObject) {
+          mobileActionBtn.classList.add('has-target');
+          const icon = mobileActionBtn.querySelector('i');
+          const span = mobileActionBtn.querySelector('span');
+          const isNpc = this.nearbyObject.id === 'receptionist_eva' || this.nearbyObject.id === 'avijit_avatar';
+          if (icon) icon.className = isNpc ? 'fas fa-comments' : 'fas fa-bolt';
+          if (span) span.textContent = isNpc ? 'TALK' : 'INTERACT';
+        } else {
+          mobileActionBtn.classList.remove('has-target');
+          const icon = mobileActionBtn.querySelector('i');
+          const span = mobileActionBtn.querySelector('span');
+          if (icon) icon.className = 'fas fa-hand-pointer';
+          if (span) span.textContent = 'INTERACT';
+        }
+      }
     }
+
+    // Smooth Camera Follow on Mobile
+    this.updateCamera(dt);
 
     // Update Particles & FX
     for (let i = this.particles.length - 1; i >= 0; i--) {

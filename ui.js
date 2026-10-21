@@ -223,6 +223,96 @@ class OfficeUI {
       });
     }
 
+    // Mobile Drawer Setup
+    const mobileMenuBtn = document.getElementById('hudMobileMenuBtn');
+    const drawerOverlay = document.getElementById('mobileDrawerOverlay');
+    const closeDrawerBtn = document.getElementById('closeMobileDrawerBtn');
+
+    const openDrawer = () => {
+      if (drawerOverlay) {
+        drawerOverlay.classList.add('active');
+        document.body.classList.add('drawer-open');
+        if (window.game) window.game.playSound('interact');
+      }
+    };
+
+    const closeDrawer = () => {
+      if (drawerOverlay) {
+        drawerOverlay.classList.remove('active');
+        document.body.classList.remove('drawer-open');
+      }
+    };
+
+    if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openDrawer);
+    if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeDrawer);
+    if (drawerOverlay) {
+      const backdrop = drawerOverlay.querySelector('.mobile-drawer-backdrop');
+      if (backdrop) backdrop.addEventListener('click', closeDrawer);
+    }
+
+    const drawerFastTravel = document.getElementById('mobileDrawerFastTravel');
+    if (drawerFastTravel) {
+      drawerFastTravel.addEventListener('click', () => {
+        closeDrawer();
+        this.openQuickTravelModal();
+      });
+    }
+
+    const drawerDossier = document.getElementById('mobileDrawerDossier');
+    if (drawerDossier && dossierView) {
+      drawerDossier.addEventListener('click', () => {
+        closeDrawer();
+        dossierView.classList.add('open');
+        this.populateDossierContent();
+      });
+    }
+
+    const drawerTour = document.getElementById('mobileDrawerTour');
+    if (drawerTour) {
+      drawerTour.addEventListener('click', () => {
+        closeDrawer();
+        if (window.game) window.game.startGuidedTour();
+      });
+    }
+
+    const drawerPass = document.getElementById('mobileDrawerPass');
+    if (drawerPass) {
+      drawerPass.addEventListener('click', () => {
+        closeDrawer();
+        this.openVisitorPassModal();
+      });
+    }
+
+    const drawerAudio = document.getElementById('mobileDrawerAudio');
+    const drawerAudioText = document.getElementById('mobileDrawerAudioText');
+    if (drawerAudio) {
+      drawerAudio.addEventListener('click', () => {
+        if (!window.game) return;
+        window.game.audioEnabled = !window.game.audioEnabled;
+        if (drawerAudioText) drawerAudioText.textContent = window.game.audioEnabled ? 'Sound FX: ON' : 'Sound FX: OFF';
+        this.showToast(window.game.audioEnabled ? '🔊 Sound Effects Enabled' : '🔇 Sound Effects Muted');
+      });
+    }
+
+    const drawerBgm = document.getElementById('mobileDrawerBgm');
+    const drawerBgmText = document.getElementById('mobileDrawerBgmText');
+    if (drawerBgm) {
+      drawerBgm.addEventListener('click', () => {
+        if (!window.game) return;
+        const isPlaying = window.game.toggleBgm();
+        if (drawerBgmText) drawerBgmText.textContent = isPlaying ? 'Music: ON' : 'Music: OFF';
+        this.showToast(isPlaying ? '🎶 Ambient Cyber BGM Playing' : '⏸️ BGM Paused');
+      });
+    }
+
+    const drawerAdmin = document.getElementById('mobileDrawerAdmin');
+    if (drawerAdmin) {
+      drawerAdmin.addEventListener('click', () => {
+        closeDrawer();
+        this.openAdminPinModal();
+      });
+    }
+
     // Owner Admin Secret Trigger: Click AP logo in HUD 3 times
     const logoBadge = document.getElementById('hudLogoBadge');
     if (logoBadge) {
@@ -338,6 +428,7 @@ class OfficeUI {
     }
 
     this.dialogueBox.classList.add('visible');
+    document.body.classList.add('dialogue-open');
 
     let i = 0;
     if (this.typewriterTimer) clearInterval(this.typewriterTimer);
@@ -379,6 +470,7 @@ class OfficeUI {
 
   closeDialogue() {
     if (this.dialogueBox) this.dialogueBox.classList.remove('visible');
+    document.body.classList.remove('dialogue-open');
     if (this.typewriterTimer) clearInterval(this.typewriterTimer);
   }
 
@@ -522,6 +614,7 @@ class OfficeUI {
     this.isMandatoryModal = isMandatory;
     this.modalContent.innerHTML = html;
     this.modalOverlay.classList.add('visible');
+    document.body.classList.add('modal-open');
     if (window.game) {
       window.game.playSound('interact');
       if (isMandatory) window.game.locked = true;
@@ -541,6 +634,7 @@ class OfficeUI {
     if (this.isMandatoryModal) return;
     if (!this.modalOverlay) return;
     this.modalOverlay.classList.remove('visible');
+    document.body.classList.remove('modal-open');
     if (window.game) {
       window.game.playSound('blip');
       window.game.locked = false;
@@ -551,6 +645,7 @@ class OfficeUI {
     this.isMandatoryModal = false;
     if (!this.modalOverlay) return;
     this.modalOverlay.classList.remove('visible');
+    document.body.classList.remove('modal-open');
     if (window.game) {
       window.game.playSound('blip');
       window.game.locked = false;

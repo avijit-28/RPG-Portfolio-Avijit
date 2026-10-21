@@ -1,5 +1,26 @@
 [
   {
+    "badgeId": "AP-VIS-6514",
+    "name": "Aviji",
+    "location": "Sabang",
+    "email": "avijitpakhira@gmail.com",
+    "registeredAt": "2026-10-21T14:59:27Z"
+  },
+  {
+    "badgeId": "AP-VIS-8968",
+    "name": "sunil",
+    "location": "kolkata",
+    "email": "sunil@gmail.com",
+    "registeredAt": "2026-10-21T14:57:59Z"
+  },
+  {
+    "badgeId": "AP-VIS-3716",
+    "name": "bano",
+    "location": "kolkata",
+    "email": "bano@gmail.com",
+    "registeredAt": "2026-10-21T14:56:30Z"
+  },
+  {
     "badgeId": "AP-VIS-4740",
     "name": "Avi",
     "location": "Sabang",

@@ -100,28 +100,33 @@
     <!-- Right: Quick Action Controls -->
     <div class="hud-right">
       <button id="hudSoundToggle" class="hud-btn" title="Toggle Sound FX">
-        <i class="fas fa-volume-high"></i> SFX: ON
+        <i class="fas fa-volume-high"></i> <span>SFX: ON</span>
       </button>
 
       <button id="hudBgmToggle" class="hud-btn" title="Toggle Synth Music">
-        <i class="fas fa-music"></i> Synth BGM: OFF
+        <i class="fas fa-music"></i> <span>Synth BGM: OFF</span>
       </button>
 
       <button id="hudTourBtn" class="hud-btn hud-btn-accent" title="Take Guided Tour">
-        <i class="fas fa-route"></i> VIP Tour
+        <i class="fas fa-route"></i> <span>VIP Tour</span>
       </button>
 
       <button id="hudMapBtn" class="hud-btn" title="Fast Travel Teleporter">
-        <i class="fas fa-map-location-dot"></i> Fast Travel
+        <i class="fas fa-map-location-dot"></i> <span>Fast Travel</span>
       </button>
 
       <button id="hudDossierBtn" class="hud-btn hud-btn-dossier" title="Switch to Full Classic Portfolio">
-        <i class="fas fa-folder-open"></i> Executive View
+        <i class="fas fa-folder-open"></i> <span>Executive View</span>
       </button>
 
       <a href="https://drive.google.com/uc?export=download&id=11c-2tHDlnOW8mPERKGlj8OP8Jjxf7sSf" target="_blank" class="hud-btn hud-btn-resume" title="Download Resume">
-        <i class="fas fa-file-pdf"></i> Resume
+        <i class="fas fa-file-pdf"></i> <span>Resume</span>
       </a>
+
+      <!-- Mobile Quick Menu Toggle -->
+      <button id="hudMobileMenuBtn" class="hud-btn hud-mobile-menu-btn" title="Quick Actions Menu">
+        <i class="fas fa-bars"></i>
+      </button>
     </div>
   </header>
 
@@ -191,6 +196,73 @@
         <i class="fas fa-hand-pointer"></i>
         <span>INTERACT</span>
       </button>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MOBILE QUICK ACTIONS BOTTOM SHEET DRAWER
+  ======================================================== -->
+  <div id="mobileDrawerOverlay" class="mobile-drawer-overlay">
+    <div class="mobile-drawer-backdrop"></div>
+    <div class="mobile-drawer-sheet">
+      <div class="mobile-drawer-handle"></div>
+      <div class="mobile-drawer-header">
+        <div class="mobile-drawer-title">
+          <span class="badge-cat"><i class="fas fa-sliders text-cyan"></i> QUICK ACTIONS</span>
+          <h3>Avijit AI Labs // Hub</h3>
+        </div>
+        <button id="closeMobileDrawerBtn" class="modal-close-btn" title="Close"><i class="fas fa-xmark"></i></button>
+      </div>
+
+      <div class="mobile-drawer-grid">
+        <button id="mobileDrawerFastTravel" class="mobile-drawer-item">
+          <i class="fas fa-map-location-dot text-cyan"></i>
+          <span class="title">Fast Travel</span>
+          <span class="desc">Teleport to any lab</span>
+        </button>
+
+        <button id="mobileDrawerDossier" class="mobile-drawer-item">
+          <i class="fas fa-folder-open text-violet"></i>
+          <span class="title">Classic Dossier</span>
+          <span class="desc">Full text resume view</span>
+        </button>
+
+        <button id="mobileDrawerTour" class="mobile-drawer-item">
+          <i class="fas fa-route text-amber"></i>
+          <span class="title">VIP Tour</span>
+          <span class="desc">Autopilot narrated guide</span>
+        </button>
+
+        <button id="mobileDrawerPass" class="mobile-drawer-item">
+          <i class="fas fa-id-badge text-emerald"></i>
+          <span class="title">Security Pass</span>
+          <span class="desc">View visitor badge</span>
+        </button>
+
+        <button id="mobileDrawerAudio" class="mobile-drawer-item">
+          <i class="fas fa-volume-high text-cyan"></i>
+          <span class="title" id="mobileDrawerAudioText">Sound FX: ON</span>
+          <span class="desc">Toggle SFX</span>
+        </button>
+
+        <button id="mobileDrawerBgm" class="mobile-drawer-item">
+          <i class="fas fa-music text-violet"></i>
+          <span class="title" id="mobileDrawerBgmText">Music: OFF</span>
+          <span class="desc">Lo-fi synth stream</span>
+        </button>
+
+        <button id="mobileDrawerAdmin" class="mobile-drawer-item">
+          <i class="fas fa-shield-halved text-amber"></i>
+          <span class="title">Owner Portal</span>
+          <span class="desc">View leads (PIN: 9410)</span>
+        </button>
+
+        <a href="https://drive.google.com/uc?export=download&id=11c-2tHDlnOW8mPERKGlj8OP8Jjxf7sSf" target="_blank" class="mobile-drawer-item" style="text-decoration: none;">
+          <i class="fas fa-file-pdf text-emerald"></i>
+          <span class="title">PDF Resume</span>
+          <span class="desc">Direct download</span>
+        </a>
+      </div>
     </div>
   </div>
 
