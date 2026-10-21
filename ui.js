@@ -1251,54 +1251,89 @@ print(f"Latency: Optimized | Tech: ${proj.tech.slice(0, 3).join(', ')}")</code><
       return;
     }
 
-    const tableRows = visitors.length > 0
-      ? visitors.map((v, i) => `
-        <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
-          <td style="padding: 0.65rem 0.5rem;"><span class="badge-clearance">#${v.badgeId || (i+1)}</span></td>
-          <td style="padding: 0.65rem 0.5rem;"><strong>${v.name}</strong></td>
-          <td style="padding: 0.65rem 0.5rem; color: var(--text-dim);">${v.location}</td>
-          <td style="padding: 0.65rem 0.5rem;"><a href="mailto:${v.email}" class="text-cyan">${v.email}</a></td>
-          <td style="padding: 0.65rem 0.5rem; color: var(--text-dim); font-size: 0.75rem;">${new Date(v.registeredAt || Date.now()).toLocaleDateString()}</td>
-        </tr>
-      `).join('')
-      : `<tr><td colspan="5" class="text-center text-dim" style="padding: 2rem;">No visitors recorded yet in this database.</td></tr>`;
+    const renderRows = (list) => {
+      if (!list || list.length === 0) {
+        return `<tr><td colspan="5" class="text-center text-dim" style="padding: 2rem;">No visitors match your search.</td></tr>`;
+      }
+      return list.map((v, i) => {
+        const d = v.registeredAt ? new Date(v.registeredAt) : new Date();
+        const dateStr = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        const timeStr = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+        return `
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <td style="padding: 0.65rem 0.5rem;"><span class="badge-clearance">#${v.badgeId || (i+1)}</span></td>
+            <td style="padding: 0.65rem 0.5rem;"><strong class="text-white">${v.name}</strong></td>
+            <td style="padding: 0.65rem 0.5rem; color: var(--text-dim);"><i class="fas fa-location-dot text-cyan" style="font-size: 0.75rem;"></i> ${v.location}</td>
+            <td style="padding: 0.65rem 0.5rem;"><a href="mailto:${v.email}" class="text-cyan">${v.email}</a></td>
+            <td style="padding: 0.65rem 0.5rem; color: var(--text-dim); font-size: 0.75rem;">${dateStr} <span style="opacity: 0.6;">${timeStr}</span></td>
+          </tr>
+        `;
+      }).join('');
+    };
 
     this.openModal(`
-      <div class="modal-card">
+      <div class="modal-card" style="max-width: 760px; width: 95%;">
         <button class="modal-close-btn"><i class="fas fa-xmark"></i></button>
         <div class="modal-badge-row">
           <span class="badge-cat"><i class="fas fa-database text-cyan"></i> OWNER ADMIN PORTAL</span>
-          <span class="badge-num">${visitors.length} REGISTERED LEADS</span>
+          <span class="badge-num" id="visitorCountBadge">${visitors.length} PAST REGISTERED VISITORS</span>
         </div>
-        <h2 class="modal-title">Avijit AI Labs Visitor Registry</h2>
-        <p class="modal-desc">Confidential database records of visitors who have registered their access pass.</p>
+        <h2 class="modal-title">Avijit AI Labs — Visitor Master Registry</h2>
+        <p class="modal-desc">Confidential database records of all visitors who have registered since inception.</p>
 
-        <div style="overflow-x: auto; margin: 1.5rem 0; max-height: 320px; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem;">
+        <div style="margin: 1rem 0 0.5rem 0; display: flex; gap: 0.5rem;">
+          <input type="text" id="visitorSearchInput" class="visitor-form-input" placeholder="🔍 Search past records by name, email, or city..." style="width: 100%; font-size: 0.85rem;" />
+        </div>
+
+        <div style="overflow-x: auto; margin: 0.75rem 0 1.25rem 0; max-height: 340px; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; background: rgba(10,15,30,0.6);">
           <table style="width: 100%; border-collapse: collapse; font-family: var(--font-body); font-size: 0.85rem; text-align: left;">
             <thead>
-              <tr style="background: rgba(15,23,42,0.9); border-bottom: 1px solid rgba(255,255,255,0.15); color: var(--cyan); font-family: var(--font-mono); font-size: 0.75rem;">
+              <tr style="background: rgba(15,23,42,0.95); border-bottom: 1px solid rgba(255,255,255,0.15); color: var(--cyan); font-family: var(--font-mono); font-size: 0.75rem; position: sticky; top: 0; z-index: 2;">
                 <th style="padding: 0.7rem 0.5rem;">BADGE</th>
                 <th style="padding: 0.7rem 0.5rem;">NAME</th>
                 <th style="padding: 0.7rem 0.5rem;">LOCATION</th>
                 <th style="padding: 0.7rem 0.5rem;">EMAIL</th>
-                <th style="padding: 0.7rem 0.5rem;">DATE</th>
+                <th style="padding: 0.7rem 0.5rem;">REGISTERED DATE & TIME</th>
               </tr>
             </thead>
-            <tbody>${tableRows}</tbody>
+            <tbody id="visitorTableBody">${renderRows(visitors)}</tbody>
           </table>
         </div>
 
-        <div class="modal-actions-row justify-center mt-3" style="gap: 0.8rem; display: flex;">
-          <button id="exportCsvBtn" class="btn-game-primary"><i class="fas fa-file-csv"></i> Export Leads to CSV</button>
+        <div class="modal-actions-row justify-center mt-3" style="gap: 0.8rem; display: flex; flex-wrap: wrap;">
+          <button id="exportCsvBtn" class="btn-game-primary"><i class="fas fa-file-csv"></i> Export All Leads to CSV</button>
+          <a href="/api/visitors?adminKey=9410" target="_blank" class="hud-btn" style="text-decoration: none;"><i class="fas fa-code"></i> View Raw JSON</a>
           <button class="hud-btn modal-close-btn"><i class="fas fa-xmark"></i> Close Registry</button>
         </div>
       </div>
     `);
 
+    // Live Instant Search Filter
+    const searchInput = document.getElementById('visitorSearchInput');
+    const tableBody = document.getElementById('visitorTableBody');
+    const countBadge = document.getElementById('visitorCountBadge');
+    if (searchInput && tableBody) {
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const filtered = query
+          ? visitors.filter(v =>
+              (v.name && v.name.toLowerCase().includes(query)) ||
+              (v.email && v.email.toLowerCase().includes(query)) ||
+              (v.location && v.location.toLowerCase().includes(query)) ||
+              (v.badgeId && v.badgeId.toLowerCase().includes(query))
+            )
+          : visitors;
+        tableBody.innerHTML = renderRows(filtered);
+        if (countBadge) {
+          countBadge.textContent = query ? `${filtered.length} of ${visitors.length} RECORDS MATCHED` : `${visitors.length} PAST REGISTERED VISITORS`;
+        }
+      });
+    }
+
     const exportBtn = document.getElementById('exportCsvBtn');
     if (exportBtn && visitors.length > 0) {
       exportBtn.addEventListener('click', () => {
-        const headers = ["Badge ID", "Name", "Location", "Email", "Registered Date"];
+        const headers = ["Badge ID", "Full Name", "Location", "Email Address", "Registration Timestamp"];
         const rows = visitors.map(v => [
           `"${v.badgeId || ''}"`,
           `"${v.name || ''}"`,
@@ -1306,15 +1341,15 @@ print(f"Latency: Optimized | Tech: ${proj.tech.slice(0, 3).join(', ')}")</code><
           `"${v.email || ''}"`,
           `"${v.registeredAt || ''}"`
         ]);
-        const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+        const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `avijit_ai_labs_leads_${Date.now()}.csv`);
+        link.setAttribute("download", `avijit_ai_labs_registered_leads_${Date.now()}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        this.showToast("📊 Visitor leads exported to CSV!");
+        this.showToast("📊 Complete visitor leads exported to CSV!");
       });
     }
   }
